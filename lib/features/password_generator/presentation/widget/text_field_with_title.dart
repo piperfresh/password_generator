@@ -39,7 +39,7 @@ class TextFieldWithTitle extends StatelessWidget {
             style: Theme.of(context)
                 .textTheme
                 .bodySmall
-                ?.copyWith(fontSize: 18.sp, color: Colors.black)),
+                ?.copyWith(fontSize: 18.sp)),
         6.sbH,
         TextField(
             controller: controller,
@@ -59,7 +59,9 @@ class TextFieldWithTitle extends StatelessWidget {
                     Theme.of(context)
                         .textTheme
                         .bodySmall
-                        ?.copyWith(fontSize: 16.sp, color: AppColor.grey)))
+                    ?.copyWith(fontSize: 16.sp, color: AppColor.grey),
+          ),
+        ),
       ],
     );
   }

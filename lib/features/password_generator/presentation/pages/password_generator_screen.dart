@@ -1,17 +1,22 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:password_generator/core/app_color.dart';
 import 'package:password_generator/core/extension.dart';
+import 'package:password_generator/core/themes/theme_notifier.dart';
 import 'package:password_generator/features/password_generator/presentation/widget/copy_able_text.dart';
+import 'package:password_generator/features/password_generator/presentation/widget/password_type_widget.dart';
 import 'package:password_generator/features/password_generator/presentation/widget/text_field_with_title.dart';
 
-class PasswordGeneratorScreen extends StatefulWidget {
+class PasswordGeneratorScreen extends ConsumerStatefulWidget {
   const PasswordGeneratorScreen({super.key});
 
   @override
-  State<PasswordGeneratorScreen> createState() =>
+  ConsumerState<PasswordGeneratorScreen> createState() =>
       _PasswordGeneratorScreenState();
 }
 
-class _PasswordGeneratorScreenState extends State<PasswordGeneratorScreen> {
+class _PasswordGeneratorScreenState
+    extends ConsumerState<PasswordGeneratorScreen> {
   final passwordCharacterController = TextEditingController();
   bool includeUppercase = false;
   bool includeLowercase = false;
@@ -26,6 +31,7 @@ class _PasswordGeneratorScreenState extends State<PasswordGeneratorScreen> {
 
   @override
   Widget build(BuildContext context) {
+    final isDarkMode = ref.watch(themeProvider) == ThemeMode.dark;
     return Scaffold(
       appBar: AppBar(
         title: Text(
@@ -34,6 +40,13 @@ class _PasswordGeneratorScreenState extends State<PasswordGeneratorScreen> {
             fontSize: 20.sp,
           ),
         ),
+        actions: [
+          IconButton(
+              onPressed: () {
+                ref.read(themeProvider.notifier).toggleTheme();
+              },
+              icon: Icon(isDarkMode ? Icons.dark_mode : Icons.light_mode)),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.all(8.0),
@@ -98,7 +111,9 @@ class _PasswordGeneratorScreenState extends State<PasswordGeneratorScreen> {
             ),
             8.sbH,
             CopyAbleText(text: 'Abass'),
-            Text('Stre')
+            12.sbH,
+            Text('Password Strength', style: context.textTheme.bodySmall),
+            5.sbH,
           ],
         ),
       ),
@@ -106,33 +121,3 @@ class _PasswordGeneratorScreenState extends State<PasswordGeneratorScreen> {
   }
 }
 
-class PasswordTypeWidget extends StatelessWidget {
-  final bool currentState;
-  final void Function(bool?)? onChanged;
-  final String title;
-
-  const PasswordTypeWidget({
-    super.key,
-    required this.currentState,
-    this.onChanged,
-    required this.title,
-  });
-
-  @override
-  Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Checkbox(
-          value: currentState,
-          onChanged: onChanged,
-        ),
-        5.sbW,
-        Text(title,
-            style: context.textTheme.bodySmall?.copyWith(
-              fontSize: 18.sp,
-              fontWeight: FontWeight.w400,
-            )),
-      ],
-    );
-  }
-}
