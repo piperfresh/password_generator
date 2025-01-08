@@ -3,9 +3,13 @@ import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:password_generator/core/app_color.dart';
 import 'package:password_generator/core/extension.dart';
 import 'package:password_generator/core/themes/theme_notifier.dart';
+import 'package:password_generator/core/utils/snack_bar.dart';
 import 'package:password_generator/features/password_generator/presentation/widget/copy_able_text.dart';
 import 'package:password_generator/features/password_generator/presentation/widget/password_type_widget.dart';
 import 'package:password_generator/features/password_generator/presentation/widget/text_field_with_title.dart';
+import 'package:password_generator/features/password_generator/repository/password_generator.dart';
+
+import '../widget/linear_tracker.dart';
 
 class PasswordGeneratorScreen extends ConsumerStatefulWidget {
   const PasswordGeneratorScreen({super.key});
@@ -22,6 +26,9 @@ class _PasswordGeneratorScreenState
   bool includeLowercase = false;
   bool includeNumber = false;
   bool includeSymbol = false;
+
+  double progress = 0;
+  String generatedPassword = '';
 
   @override
   void dispose() {
@@ -48,73 +55,114 @@ class _PasswordGeneratorScreenState
               icon: Icon(isDarkMode ? Icons.dark_mode : Icons.light_mode)),
         ],
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            TextFieldWithTitle(
-              title: 'Password length',
-              controller: passwordCharacterController,
-            ),
-            12.sbH,
-            PasswordTypeWidget(
-              title: 'Include uppercase',
-              currentState: includeUppercase,
-              onChanged: (value) {
-                setState(() {
-                  includeUppercase = value!;
-                });
-              },
-            ),
-            PasswordTypeWidget(
-              title: 'include lowercase',
-              currentState: includeLowercase,
-              onChanged: (value) {
-                setState(() {
-                  includeLowercase = value!;
-                });
-              },
-            ),
-            PasswordTypeWidget(
-              title: 'include number',
-              currentState: includeNumber,
-              onChanged: (value) {
-                setState(() {
-                  includeNumber = value!;
-                });
-              },
-            ),
-            PasswordTypeWidget(
-              title: 'include symbol',
-              currentState: includeSymbol,
-              onChanged: (value) {
-                setState(() {
-                  includeSymbol = value!;
-                });
-              },
-            ),
-            SizedBox(
-              width: double.infinity,
-              child: ElevatedButton(
-                  style: ElevatedButton.styleFrom(),
-                  onPressed: () {},
-                  child: Text(
-                    'Generate',
-                    style: context.textTheme.bodyMedium,
-                  )),
-            ),
-            12.sbH,
-            Text(
-              'Generated password',
-              style: context.textTheme.bodySmall,
-            ),
-            8.sbH,
-            CopyAbleText(text: 'Abass'),
-            12.sbH,
-            Text('Password Strength', style: context.textTheme.bodySmall),
-            5.sbH,
-          ],
+      body: SingleChildScrollView(
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              TextFieldWithTitle(
+                title: 'Password length',
+                controller: passwordCharacterController,
+                keyboardType: TextInputType.number,
+              ),
+              12.sbH,
+              PasswordTypeWidget(
+                title: 'Include uppercase',
+                currentState: includeUppercase,
+                onChanged: (value) {
+                  setState(() {
+                    includeUppercase = value!;
+                  });
+                },
+              ),
+              PasswordTypeWidget(
+                title: 'Include lowercase',
+                currentState: includeLowercase,
+                onChanged: (value) {
+                  setState(() {
+                    includeLowercase = value!;
+                  });
+                },
+              ),
+              PasswordTypeWidget(
+                title: 'Include number',
+                currentState: includeNumber,
+                onChanged: (value) {
+                  setState(() {
+                    includeNumber = value!;
+                  });
+                },
+              ),
+              PasswordTypeWidget(
+                title: 'Include symbol',
+                currentState: includeSymbol,
+                onChanged: (value) {
+                  setState(() {
+                    includeSymbol = value!;
+                  });
+                },
+              ),
+              SizedBox(
+                  width: double.infinity,
+                  child: ElevatedButton(
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: isDarkMode
+                            ? AppColor.blueShade400
+                            : AppColor.blueShade200,
+                      ),
+                      onPressed: () {
+                        if (passwordCharacterController.text.isEmpty) {
+                          SnackBarUtils.snackBar(
+                              context, 'Please enter  password length');
+                          return;
+                        }
+                        final length =
+                            int.tryParse(passwordCharacterController.text) ?? 0;
+
+
+                        if (length <= 0) {
+                          SnackBarUtils.snackBar(
+                              context, 'Please enter a valid password length');
+                          return;
+                        }
+
+                        final generatePassword =
+                            PasswordGenerator.generatePassword(
+                                length: length,
+                                includeUppercase: includeUppercase,
+                                includeLowercase: includeLowercase,
+                                includeNumber: includeNumber,
+                                includeSymbol: includeSymbol);
+
+                        setState(() {
+                          generatedPassword = generatePassword;
+                        });
+
+                        setState(() {
+                          progress =
+                              PasswordGenerator.calculatePasswordStrength(
+                                  generatePassword);
+                        });
+                      },
+                      child: Text('Generate',
+                          style: context.textTheme.bodyMedium))),
+              12.sbH,
+              Text(
+                'Generated password',
+                style: context.textTheme.bodySmall,
+              ),
+              8.sbH,
+              CopyAbleText(text: generatedPassword),
+              12.sbH,
+              Text('Password Strength', style: context.textTheme.bodySmall),
+              10.sbH,
+              LinearTracker(
+                progress: progress,
+                height: 10.h,
+              )
+            ],
+          ),
         ),
       ),
     );

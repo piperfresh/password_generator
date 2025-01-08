@@ -6,37 +6,37 @@ import 'package:password_generator/core/extension.dart';
 import '../../../../core/app_color.dart';
 import '../../../../core/themes/theme_notifier.dart';
 
-class CopyAbleText extends StatelessWidget {
+class CopyAbleText extends ConsumerWidget {
   final String text;
 
   const CopyAbleText({super.key, required this.text});
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isDarkMode = ref.watch(themeProvider) == ThemeMode.dark;
     return Row(
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
         Expanded(
-          child: Consumer(builder: (context, ref, child) {
-            final isDarkMode = ref.watch(themeProvider) == ThemeMode.dark;
-            return Container(
+            child: Container(
                 padding: const EdgeInsets.all(6),
                 decoration: BoxDecoration(
                   border: Border.all(
                       color: isDarkMode ? AppColor.white : AppColor.black),
                   borderRadius: BorderRadius.circular(10.0),
                 ),
-                child: Text(text, style: TextStyle(fontSize: 18.sp)));
-          }),
-        ),
+                child: Text(text, style: TextStyle(fontSize: 18.sp)))),
         9.sbW,
         ElevatedButton(
-            onPressed: () async {
-              await Clipboard.setData(ClipboardData(text: text));
-              ScaffoldMessenger.of(context).showSnackBar(
-                SnackBar(
-                  content: Text(
+          style: ElevatedButton.styleFrom(
+              backgroundColor:
+                  isDarkMode ? AppColor.blueShade400 : AppColor.blueShade200),
+          onPressed: () async {
+            await Clipboard.setData(ClipboardData(text: text));
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text(
                     '$text copied to clipboard',
                     style: context.textTheme.bodySmall?.copyWith(
                       color: AppColor.white,
@@ -47,7 +47,13 @@ class CopyAbleText extends StatelessWidget {
                 ),
               );
             },
-            child: const Text('Copy'))
+          child: Text(
+            'Copy',
+            style: context.textTheme.bodyMedium?.copyWith(
+              fontSize: 14.sp,
+            ),
+          ),
+        ),
       ],
     );
   }

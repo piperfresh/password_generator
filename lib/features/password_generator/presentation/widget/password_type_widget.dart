@@ -15,19 +15,26 @@ class PasswordTypeWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Row(
-      children: [
-        Checkbox(
-          value: currentState,
-          onChanged: onChanged,
-        ),
-        5.sbW,
-        Text(title,
-            style: context.textTheme.bodySmall?.copyWith(
-              fontSize: 18.sp,
-              fontWeight: FontWeight.w400,
-            )),
-      ],
+    return GestureDetector(
+      onTap: () {
+        if (onChanged != null) {
+          onChanged!(!currentState);
+        }
+      },
+      child: Row(
+        children: [
+          Checkbox(
+            value: currentState,
+            onChanged: onChanged,
+            materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+          ),
+          Text(title,
+              style: context.textTheme.bodySmall?.copyWith(
+                fontSize: 18.sp,
+                fontWeight: FontWeight.w400,
+              )),
+        ],
+      ),
     );
   }
 }

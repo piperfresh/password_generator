@@ -9,11 +9,14 @@ final themeStorageProvider = Provider<ThemeStorage>((ref) {
 });
 
 abstract class ThemeStorage {
-  // factory ThemeStorage() => ThemeStorageImpl();
-
   Future<bool> getThemeMode();
 
   Future<bool> setThemeMode(bool currentThemeMode);
+
+  static Future<ThemeStorage> getInstance() async {
+    final prefs = await SharedPreferences.getInstance();
+    return ThemeStorageImpl(prefs);
+  }
 }
 
 class ThemeStorageImpl implements ThemeStorage {
