@@ -36,6 +36,29 @@ class _PasswordGeneratorScreenState
     passwordCharacterController.dispose();
   }
 
+  String passwordStrength(double strength) {
+    if (strength == 0) {
+      return '';
+    } else if (strength < 40) {
+      return 'Weak';
+    } else if (strength >= 40 && strength < 60) {
+      return 'Fair';
+    } else if (strength >= 60 && strength < 80) {
+      return 'Strong';
+    } else if (strength >= 80) {
+      return 'Very Strong';
+    } else {
+      return '';
+    }
+  }
+
+  bool isAnyCheckboxSelected() {
+    return includeUppercase ||
+        includeLowercase ||
+        includeNumber ||
+        includeSymbol;
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDarkMode = ref.watch(themeProvider) == ThemeMode.dark;
@@ -107,16 +130,20 @@ class _PasswordGeneratorScreenState
                   width: double.infinity,
                   child: ElevatedButton(
                       style: ElevatedButton.styleFrom(
-                        backgroundColor: isDarkMode
-                            ? AppColor.blueShade400
-                            : AppColor.blueShade200,
+                        backgroundColor: !isAnyCheckboxSelected()
+                            ? null
+                            : isDarkMode
+                                ? AppColor.blueShade400
+                                : AppColor.blueShade200,
                       ),
-                      onPressed: () {
-                        if (passwordCharacterController.text.isEmpty) {
-                          SnackBarUtils.snackBar(
-                              context, 'Please enter  password length');
-                          return;
-                        }
+                      onPressed: !isAnyCheckboxSelected()
+                          ? null
+                          : () {
+                              if (passwordCharacterController.text.isEmpty) {
+                                SnackBarUtils.snackBar(
+                                    context, 'Please enter  password length');
+                                return;
+                              }
                         final length =
                             int.tryParse(passwordCharacterController.text) ?? 0;
 
@@ -137,16 +164,16 @@ class _PasswordGeneratorScreenState
 
                         setState(() {
                           generatedPassword = generatePassword;
-                        });
-
-                        setState(() {
-                          progress =
-                              PasswordGenerator.calculatePasswordStrength(
-                                  generatePassword);
-                        });
-                      },
+                                progress =
+                                    PasswordGenerator.calculatePasswordStrength(
+                                        generatePassword);
+                              });
+                            },
                       child: Text('Generate',
-                          style: context.textTheme.bodyMedium))),
+                          style: context.textTheme.bodyMedium?.copyWith(
+                              color: !isAnyCheckboxSelected()
+                                  ? AppColor.grey
+                                  : null)))),
               12.sbH,
               Text(
                 'Generated password',
@@ -160,7 +187,14 @@ class _PasswordGeneratorScreenState
               LinearTracker(
                 progress: progress,
                 height: 10.h,
-              )
+              ),
+              5.sbH,
+              Text(
+                passwordStrength(progress),
+                style: context.textTheme.bodySmall?.copyWith(
+                  fontSize: 15.sp,
+                ),
+              ),
             ],
           ),
         ),

@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:password_generator/core/extension.dart';
+import 'package:password_generator/core/themes/theme_notifier.dart';
 
 import '../../../../core/app_color.dart';
 
-class TextFieldWithTitle extends StatelessWidget {
+class TextFieldWithTitle extends ConsumerWidget {
   final String title;
   final TextEditingController? controller;
   final String? hintText;
@@ -31,7 +33,8 @@ class TextFieldWithTitle extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context, WidgetRef ref) {
+    final isDarkMode = ref.watch(themeProvider) == ThemeMode.dark;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -42,7 +45,11 @@ class TextFieldWithTitle extends StatelessWidget {
                 ?.copyWith(fontSize: 18.sp)),
         6.sbH,
         TextField(
-            controller: controller,
+          style: Theme.of(context)
+              .textTheme
+              .bodySmall
+              ?.copyWith(fontSize: 16.sp, color: AppColor.black),
+          controller: controller,
             inputFormatters: inputFormatters,
             keyboardType: keyboardType,
             onTap: onTap,
@@ -50,11 +57,16 @@ class TextFieldWithTitle extends StatelessWidget {
             decoration: InputDecoration(
                 border: OutlineInputBorder(
                     borderRadius: BorderRadius.circular(10.0),
-                    borderSide: const BorderSide(color: AppColor.black)),
-                contentPadding: contentPadding ?? const EdgeInsets.all(10),
-                filled: true,
-                fillColor: Colors.white,
-                hintText: hintText,
+                borderSide: BorderSide(
+                    color: isDarkMode ? AppColor.white : AppColor.black)),
+            focusedBorder: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(10.0),
+                borderSide: BorderSide(
+                    color: isDarkMode ? AppColor.white : AppColor.black)),
+            contentPadding: contentPadding ?? const EdgeInsets.all(10),
+            filled: true,
+            fillColor: Colors.white,
+            hintText: hintText,
                 hintStyle: hintStyle ??
                     Theme.of(context)
                         .textTheme

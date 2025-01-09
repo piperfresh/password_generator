@@ -65,6 +65,20 @@ class _LinearTrackerState extends State<LinearTracker>
     super.dispose();
   }
 
+  Color passwordStrengthColor(double strength) {
+    if (strength < 40) {
+      return Colors.red;
+    } else if (strength >= 40 && strength < 60) {
+      return Colors.orange;
+    } else if (strength >= 60 && strength < 80) {
+      return Colors.lightGreen;
+    } else if (strength >= 80) {
+      return Colors.green;
+    } else {
+      return Colors.transparent;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -104,7 +118,7 @@ class _LinearTrackerState extends State<LinearTracker>
                     child: Container(
                       height: widget.height,
                       decoration: BoxDecoration(
-                        color: widget.color ?? Colors.blue,
+                        color: widget.color ?? passwordStrengthColor(widget.progress),
                         borderRadius: BorderRadius.circular(widget.height / 2),
                       ),
                     ),

@@ -30,11 +30,16 @@ class CopyAbleText extends ConsumerWidget {
         9.sbW,
         ElevatedButton(
           style: ElevatedButton.styleFrom(
-              backgroundColor:
-                  isDarkMode ? AppColor.blueShade400 : AppColor.blueShade200),
-          onPressed: () async {
-            await Clipboard.setData(ClipboardData(text: text));
-            ScaffoldMessenger.of(context).showSnackBar(
+              backgroundColor: text.isEmpty
+                  ? AppColor.grey
+                  : isDarkMode
+                      ? AppColor.blueShade400
+                      : AppColor.blueShade200),
+          onPressed: text.isEmpty
+              ? null
+              : () async {
+                  await Clipboard.setData(ClipboardData(text: text));
+                  ScaffoldMessenger.of(context).showSnackBar(
               SnackBar(
                 content: Text(
                     '$text copied to clipboard',
@@ -50,7 +55,7 @@ class CopyAbleText extends ConsumerWidget {
           child: Text(
             'Copy',
             style: context.textTheme.bodyMedium?.copyWith(
-              fontSize: 14.sp,
+              fontSize: 14.sp,color: text.isEmpty ? AppColor.grey : null,
             ),
           ),
         ),
