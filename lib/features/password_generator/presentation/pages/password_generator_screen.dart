@@ -37,19 +37,11 @@ class _PasswordGeneratorScreenState
   }
 
   String passwordStrength(double strength) {
-    if (strength == 0) {
-      return '';
-    } else if (strength < 40) {
-      return 'Weak';
-    } else if (strength >= 40 && strength < 60) {
-      return 'Fair';
-    } else if (strength >= 60 && strength < 80) {
-      return 'Strong';
-    } else if (strength >= 80) {
-      return 'Very Strong';
-    } else {
-      return '';
-    }
+    if (strength >= 80) return 'Very Strong';
+    if (strength >= 60) return 'Strong';
+    if (strength >= 40) return 'Moderate';
+    if (strength >= 20) return 'Weak';
+    return 'Very Weak';
   }
 
   bool isAnyCheckboxSelected() {
@@ -147,27 +139,36 @@ class _PasswordGeneratorScreenState
                         final length =
                             int.tryParse(passwordCharacterController.text) ?? 0;
 
+                              print(length);
 
-                        if (length <= 0) {
-                          SnackBarUtils.snackBar(
-                              context, 'Please enter a valid password length');
+                              if (length <= 0) {
+                                SnackBarUtils.snackBar(context, 'Please enter a valid password length');
                           return;
                         }
 
-                        final generatePassword =
-                            PasswordGenerator.generatePassword(
-                                length: length,
-                                includeUppercase: includeUppercase,
-                                includeLowercase: includeLowercase,
-                                includeNumber: includeNumber,
-                                includeSymbol: includeSymbol);
+                              // final generatePassword =
+                              // PasswordGenerator.generatePassword(
+                              //     length: length,
+                              //     includeUppercase: includeUppercase,
+                              //     includeLowercase: includeLowercase,
+                              //     includeNumber: includeNumber,
+                              //     includeSymbol: includeSymbol);
 
-                        setState(() {
-                          generatedPassword = generatePassword;
+                              final generatePassword =
+                                  PasswordGenerator.generatePassword(
+                                      length: length,
+                                      includeUppercase: includeUppercase,
+                                      includeLowercase: includeLowercase,
+                                      includeNumbers: includeNumber,
+                                      includeSpecialCharacters: includeSymbol);
+
+                              setState(() {
+                                generatedPassword = generatePassword;
                                 progress =
                                     PasswordGenerator.calculatePasswordStrength(
                                         generatePassword);
                               });
+                              print('this is progress $progress');
                             },
                       child: Text('Generate',
                           style: context.textTheme.bodyMedium?.copyWith(
